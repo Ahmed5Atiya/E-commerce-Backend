@@ -14,21 +14,17 @@ const {
   deleteCategory,
 } = require("../controller/categoryController");
 const express = require("express");
+const validationCategory = require("../middleware/validationMiddlerware");
+const {
+  getCategory,
+  getCategoryValidation,
+  createCategoryValidation,
+} = require("../validation/categoryValidation");
 const router = express.Router();
 
 router.get("/", getAllCategorys);
-router.get(
-  "/:id",
-  body("id").isMongoId().withMessage("invalid id for the product this id"),
-  (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-  },
-  getASingleCategory
-);
-router.post("/", addCategory);
+router.get("/:id", getCategoryValidation, getASingleCategory);
+router.post("/", createCategoryValidation, addCategory);
 router.put("/:id", ubdateCategory);
 router.delete("/:id", deleteCategory);
 
