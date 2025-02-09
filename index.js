@@ -13,13 +13,12 @@ var app = express();
 // Database Name
 // const dbName = "e-commerce-app";
 const connectToDb = async () => {
-  try {
-    await mongoose.connect(process.env.URL);
-    console.log("Connected to MongoDB!");
-  } catch (error) {
-    console.error("Error connecting to MongoDB :", error);
-    process.exit(1); // Exit process on connection failure
-  }
+  //   try {
+  await mongoose.connect(process.env.URL);
+  console.log("Connected to MongoDB!");
+  //   }catch(error){
+  //     console.log('some error in connection the database')
+  // }
 };
 connectToDb();
 
@@ -40,6 +39,14 @@ app.use((error, req, res, next) => {
     stack: error.stack,
   });
 });
-app.listen(process.env.PORT || 3300, () => {
+const server = app.listen(process.env.PORT || 3300, () => {
   console.log("Server is running ...");
+});
+
+process.on("unhandledRejection", (error) => {
+  console.error(`UnhandelRejection  the error ${error.name || error.message}`);
+  server.close(() => {
+    console.error("the server Shutdwon");
+    process.exit(1);
+  });
 });
