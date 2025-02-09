@@ -19,13 +19,15 @@ const {
   getCategory,
   getCategoryValidation,
   createCategoryValidation,
+  ubdateCategoryValidation,
+  deleteCategoryValidation,
 } = require("../validation/categoryValidation");
 const router = express.Router();
 
 router.get("/", getAllCategorys);
 router.get("/:id", getCategoryValidation, getASingleCategory);
 router.post("/", createCategoryValidation, addCategory);
-router.put("/:id", ubdateCategory);
-router.delete("/:id", deleteCategory);
+router.put("/:id", ubdateCategoryValidation, ubdateCategory);
+router.delete("/:id", deleteCategoryValidation, deleteCategory);
 
 module.exports = router;
