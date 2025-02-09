@@ -43,6 +43,7 @@ const server = app.listen(process.env.PORT || 3300, () => {
   console.log("Server is running ...");
 });
 
+// handel rejection outside the express
 process.on("unhandledRejection", (error) => {
   console.error(`UnhandelRejection  the error ${error.name || error.message}`);
   server.close(() => {
