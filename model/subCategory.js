@@ -1,23 +1,23 @@
-const mongooes = require("mongooes");
-const SubCategorySchemas = new mongooes.Schema(
+const mongoose = require("mongoose");
+const SubCategorySchema = new mongoose.Schema(
   {
-    title: {
-      type: "string",
+    name: {
+      type: String,
+      require: [true, "the name for category is require"],
       trim: true,
-      required: true,
-      unique: [true, "subcategory must be specified"],
+      unique: true,
     },
     slug: {
-      type: "string",
+      type: String,
       lowercase: true,
     },
     category: {
-      type: mongooes.Schema.ObjectId,
+      type: mongoose.Schema.ObjectId,
       ref: "Category",
       required: [true, "subcategory must be belong to this category perant"],
     },
   },
-  { Timestamp: true }
+  { timestamps: true }
 );
-
-module.exports = mongooes.model("SubCategory", SubCategorySchema);
+const SubCategory = mongoose.model("SubCategory", SubCategorySchema);
+module.exports = SubCategory;

@@ -3,6 +3,7 @@ const dotenv = require("dotenv");
 var morgan = require("morgan");
 dotenv.config({ path: ".env" });
 const CategoryRouter = require("./routes/categoryRoutes");
+const subCategoryRouter = require("./routes/subCategoryRoutes");
 const mongoose = require("mongoose");
 const ApiError = require("./utlis/globalError");
 var app = express();
@@ -24,7 +25,8 @@ connectToDb();
 
 app.use(express.json());
 app.use(morgan("combined"));
-app.use("/api/v1", CategoryRouter);
+app.use("/api/v1/category", CategoryRouter);
+app.use("/api/v1/subcategory", subCategoryRouter);
 app.all("*", (req, res, next) => {
   const error = ApiError.create("this route no correct", 404, "error");
   next(error);

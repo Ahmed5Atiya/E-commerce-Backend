@@ -4,9 +4,13 @@ const expressAsyncHandler = require("express-async-handler");
 const asyncHandler = require("express-async-handler");
 const ApiError = require("../utlis/globalError");
 const getAllCategorys = async (req, res) => {
-  const product = await CategorySchema.find({});
+  const query = req.query;
+  const page = query.page * 1 || 1;
+  const limit = query.limit * 1 || 5;
+  const skip = (page - 1) * limit;
+  const product = await CategorySchema.find({}).skip(skip).limit(limit);
 
-  res.json({ product });
+  res.json({ result: product.length, page, data: product });
 };
 const getASingleCategory = async (req, res) => {
   const { id } = req.params;
