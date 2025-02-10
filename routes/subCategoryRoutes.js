@@ -12,8 +12,8 @@ const {
   deleteSubCategoryValidation,
 } = require("../validation/subCategoryValidation");
 
-const router = express.Router();
-
+// this to get the params like id form the url  ex /:categoryId/subcategory returns categoryId
+const router = express.Router({ mergeParams: true });
 router.post("/", createSubCategoryValidation, createSubCategory);
 router.get("/", getAllSubCategorys);
 router.get("/:id", getSingleSubCategoryValidation, getASingleSubCategory);

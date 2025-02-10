@@ -22,8 +22,9 @@ const {
   ubdateCategoryValidation,
   deleteCategoryValidation,
 } = require("../validation/categoryValidation");
+const subCategoryRouter = require("../routes/subCategoryRoutes");
 const router = express.Router();
-
+router.use("/:categoryId/subcategory", subCategoryRouter);
 router.get("/", getAllCategorys);
 router.get("/:id", getCategoryValidation, getASingleCategory);
 router.post("/", createCategoryValidation, addCategory);

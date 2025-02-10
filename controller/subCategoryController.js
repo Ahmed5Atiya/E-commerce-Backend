@@ -16,14 +16,17 @@ const createSubCategory = asyncHandler(async (req, res) => {
 const getAllSubCategorys = async (req, res) => {
   const query = req.query;
   const page = query.page * 1 || 1;
-  const limit = query.limit * 1 || 3;
+  const limit = query.limit * 1 || 15;
   const skip = (page - 1) * limit;
-  const product = await SubCategory.find({})
+  let filterByCategory = {};
+  if (req.params.categoryId) {
+    filterByCategory = { category: req.params.categoryId }; // Use 'category', not 'categoryId'
+  }
+  const subcategories = await SubCategory.find(filterByCategory) // Apply the filter here!
     .skip(skip)
-    .limit(limit)
-    .populate({ path: "category", select: "name -_id" });
-
-  res.json({ result: product.length, page, data: product });
+    .limit(limit);
+  // .populate({ path: "category", select: "name -_id" });
+  res.json({ result: subcategories.length, page, data: subcategories });
 };
 const getASingleSubCategory = async (req, res) => {
   const { id } = req.params;
