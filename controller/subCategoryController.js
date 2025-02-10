@@ -18,7 +18,10 @@ const getAllSubCategorys = async (req, res) => {
   const page = query.page * 1 || 1;
   const limit = query.limit * 1 || 3;
   const skip = (page - 1) * limit;
-  const product = await SubCategory.find({}).skip(skip).limit(limit);
+  const product = await SubCategory.find({})
+    .skip(skip)
+    .limit(limit)
+    .populate({ path: "category", select: "name -_id" });
 
   res.json({ result: product.length, page, data: product });
 };
