@@ -3,7 +3,13 @@ const SubCategory = require("../model/subCategory");
 const ApiError = require("../utlis/globalError");
 
 const { default: slugify } = require("slugify");
+
+const setCategoryIdTobody = (req, res, next) => {
+  if (req.params.categoryId) req.body.category = req.params.categoryId;
+  next();
+};
 const createSubCategory = asyncHandler(async (req, res) => {
+  //   if (req.params.categoryId) req.category = req.params.categoryId;
   const { name, category } = req.body;
   const newSubCategory = await SubCategory.create({
     name,
@@ -77,4 +83,5 @@ module.exports = {
   getASingleSubCategory,
   deleteSubCategory,
   ubdateSubCategory,
+  setCategoryIdTobody,
 };

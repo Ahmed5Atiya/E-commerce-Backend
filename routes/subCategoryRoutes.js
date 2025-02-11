@@ -5,6 +5,7 @@ const {
   getASingleSubCategory,
   deleteSubCategory,
   ubdateSubCategory,
+  setCategoryIdTobody,
 } = require("../controller/subCategoryController");
 const {
   createSubCategoryValidation,
@@ -14,7 +15,12 @@ const {
 
 // this to get the params like id form the url  ex /:categoryId/subcategory returns categoryId
 const router = express.Router({ mergeParams: true });
-router.post("/", createSubCategoryValidation, createSubCategory);
+router.post(
+  "/",
+  setCategoryIdTobody,
+  createSubCategoryValidation,
+  createSubCategory
+);
 router.get("/", getAllSubCategorys);
 router.get("/:id", getSingleSubCategoryValidation, getASingleSubCategory);
 router.put("/:id", getSingleSubCategoryValidation, ubdateSubCategory);
