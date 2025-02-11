@@ -6,13 +6,9 @@ const CategoryRouter = require("./routes/categoryRoutes");
 const subCategoryRouter = require("./routes/subCategoryRoutes");
 const mongoose = require("mongoose");
 const ApiError = require("./utlis/globalError");
+const brandRoute = require("./routes/brandRoute");
+const ProductRouter = require("./routes/productRoutes");
 var app = express();
-// Connection URL
-// const url =
-//   "mongodb+srv://a7medkh326:58XjblGFv7xt0uMN@cluster0.xbxem.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
-
-// Database Name
-// const dbName = "e-commerce-app";
 const connectToDb = async () => {
   //   try {
   await mongoose.connect(process.env.URL);
@@ -27,6 +23,8 @@ app.use(express.json());
 app.use(morgan("combined"));
 app.use("/api/v1/category", CategoryRouter);
 app.use("/api/v1/subcategory", subCategoryRouter);
+app.use("/api/v1/brand", brandRoute);
+app.use("/api/v1/product", ProductRouter);
 app.all("*", (req, res, next) => {
   const error = ApiError.create("this route no correct", 404, "error");
   next(error);
@@ -47,7 +45,7 @@ const server = app.listen(process.env.PORT || 3300, () => {
 
 // handel rejection outside the express
 process.on("unhandledRejection", (error) => {
-  console.error(`UnhandelRejection  the error ${error.name || error.message}`);
+  console.error(`UnhandelRejection  the error ${error}`);
   server.close(() => {
     console.error("the server Shutdwon");
     process.exit(1);

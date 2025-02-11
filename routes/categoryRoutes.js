@@ -1,10 +1,3 @@
-// const { getAllCategorys } = require("../controller/category.controller");
-// const express = require("express");
-// const router = express.Router();
-
-// router.get("/", getAllCategorys);
-
-// module.exports = router;
 const { body, validationResult } = require("express-validator");
 const {
   getAllCategorys,
