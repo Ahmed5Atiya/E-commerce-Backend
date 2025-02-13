@@ -73,7 +73,6 @@ exports.createProductValidation = [
     .custom((subCategores) =>
       SubCategory.find({ _id: { $exists: true, $in: subCategores } }).then(
         (result) => {
-          console.log(result);
           if (result.length !== subCategores.length || result.length < 1) {
             return Promise.reject(
               new Error("this sub category id not found in sub categories")
@@ -81,6 +80,21 @@ exports.createProductValidation = [
           }
         }
       )
+    )
+    .custom((value, { req }) =>
+      // this to return all subcategories belonging to this category id
+      SubCategory.find({ category: req.body.category }).then((subcategores) => {
+        const subCategoryId = [];
+        subcategores.forEach((subCategory) => {
+          subCategoryId.push(subCategory._id.toString());
+        });
+        const checker = value.every((val) => subCategoryId.includes(val));
+        if (!checker) {
+          return Promise.reject(
+            new Error("this sub category not belong to this category")
+          );
+        }
+      })
     ),
   check("brand")
     .optional()
