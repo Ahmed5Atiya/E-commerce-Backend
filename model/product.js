@@ -1,11 +1,10 @@
 const mongoose = require("mongoose");
-
 const productSchema = new mongoose.Schema(
   {
     title: {
       type: String,
       minLength: [2, "the min length for the title is 2"],
-      maxLength: [200, "the min length for the title is 200"],
+      maxLength: [200, "the max length for the title is 200"],
       required: true,
       trim: true,
     },
@@ -30,15 +29,17 @@ const productSchema = new mongoose.Schema(
     price: {
       type: Number,
       required: [true, "the product price is required"],
-      trim: true,
-      minLength: [2, "the price for the product should be upper than 20"],
-      maxLength: [
-        200000,
-        "the price for the product should be lower than 200000",
-      ],
+      max: [200000, "the price for the product should be lower than 200000"],
     },
-    priceAfterDisc: {
+    priceAfterDiscount: {
       type: Number,
+      validate: {
+        validator: function (value) {
+          return value <= this.price;
+        },
+        message:
+          "the discounted price should be less than or equal to the original price",
+      },
     },
     colors: [String],
     imageCover: {
@@ -64,7 +65,7 @@ const productSchema = new mongoose.Schema(
     ratingsAverage: {
       type: Number,
       min: [1, "the rating should be at least 1"],
-      max: [5, "the rating should be at not more than 5"],
+      max: [5, "the rating should be not more than 5"],
     },
     ratingsQuantity: {
       type: Number,

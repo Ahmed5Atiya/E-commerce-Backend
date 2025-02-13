@@ -1,5 +1,8 @@
 const { check } = require("express-validator");
 const validationCategory = require("../middleware/validationMiddlerware");
+const CategorySchema = require("../model/category");
+const ApiError = require("../utlis/globalError");
+const SubCategory = require("../model/subCategory");
 
 exports.createProductValidation = [
   check("title")
@@ -26,18 +29,14 @@ exports.createProductValidation = [
     .notEmpty()
     .withMessage("price must be Provided")
     .isNumeric()
-    .withMessage("price must be a number")
-    .isLength({ min: 2 })
-    .withMessage("price must be not small then 20 char ")
-    .isLength({ max: 2000000 })
-    .withMessage("price must be not larger then 2000 char "),
-  check("priceAfterDisc")
+    .withMessage("price must be a number"),
+  check("priceAfterDiscount")
     .optional()
     .toFloat()
     .isNumeric()
     .withMessage("price disc must be a number")
     .custom((value, { req }) => {
-      if (req.body.price <= value) {
+      if (value >= req.body.price) {
         throw new Error("price after decound must be lower than price ");
       }
       return value;
@@ -57,11 +56,32 @@ exports.createProductValidation = [
     .notEmpty()
     .withMessage("category must be provided ")
     .isMongoId()
-    .withMessage("category must be valid it "),
+    .withMessage("category must be valid it ")
+    .custom(async (value, { req, next }) => {
+      const category = await CategorySchema.findById({
+        _id: req.body.category,
+      });
+      if (!category) {
+        throw new Error(`Category no found for ${req.body.category}`);
+      }
+      return category;
+    }),
   check("subCategory")
     .optional()
     .isMongoId()
-    .withMessage("category must be valid it "),
+    .withMessage("category must be valid it ")
+    .custom((subCategores) =>
+      SubCategory.find({ _id: { $exists: true, $in: subCategores } }).then(
+        (result) => {
+          console.log(result);
+          if (result.length !== subCategores.length || result.length < 1) {
+            return Promise.reject(
+              new Error("this sub category id not found in sub categories")
+            );
+          }
+        }
+      )
+    ),
   check("brand")
     .optional()
     .isMongoId()
