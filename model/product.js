@@ -31,8 +31,11 @@ const productSchema = new mongoose.Schema(
       type: Number,
       required: [true, "the product price is required"],
       trim: true,
-      min: [20, "the price for the product should be upper than 20"],
-      max: [200000, "the price for the product should be lower than 200000"],
+      minLength: [2, "the price for the product should be upper than 20"],
+      maxLength: [
+        200000,
+        "the price for the product should be lower than 200000",
+      ],
     },
     priceAfterDisc: {
       type: Number,
@@ -58,12 +61,12 @@ const productSchema = new mongoose.Schema(
       type: mongoose.Schema.ObjectId,
       ref: "Brand",
     },
-    ratingAvrage: {
+    ratingsAverage: {
       type: Number,
       min: [1, "the rating should be at least 1"],
       max: [5, "the rating should be at not more than 5"],
     },
-    ratingquantity: {
+    ratingsQuantity: {
       type: Number,
       default: 0,
     },

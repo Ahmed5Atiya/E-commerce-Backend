@@ -6,14 +6,14 @@ const { default: slugify } = require("slugify");
 
 const createProduct = asyncHandler(async (req, res, next) => {
   const productData = req.body;
+
   const product = await Product.create({
-    productData,
+    ...productData, // Spread the properties of productData here!
     slug: slugify(req.body.title),
   });
 
   res.status(200).json({ product: product });
 });
-
 const getProducts = asyncHandler(async (req, res, next) => {
   const page = req.query.page * 1 || 1;
   const limit = req.query.limit * 1 || 6;
@@ -24,7 +24,7 @@ const getProducts = asyncHandler(async (req, res, next) => {
 
 const getProduct = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
-  const product = await Product.findById({ id: id });
+  const product = await Product.findById({ _id: id });
   if (!product) {
     return next(ApiError.create(404, "Product not found", "faild"));
   }
@@ -42,20 +42,23 @@ const deleteProduct = asyncHandler(async (req, res, next) => {
 });
 
 const updateProduct = asyncHandler(async (req, res, next) => {
-  const { id } = req.body;
+  const { id } = req.params; // Get ID from req.params, not req.body
   if (req.body.title) {
     req.body.slug = slugify(req.body.title);
   }
-  const body = req.body;
-  const newProduct = await Product.findByIdAndUpdate(
-    { _id: id },
-    { body },
+  const updatedProduct = await Product.findByIdAndUpdate(
+    id,
+    { $set: req.body }, // Use $set to update specific fields
     { new: true }
   );
-  if (!newProduct) {
-    return next(ApiError.create(404, "this product is not available", "faild"));
+
+  if (!updatedProduct) {
+    return next(
+      ApiError.create(404, "This product is not available", "failed")
+    ); // Corrected typo
   }
-  res.status(200).json({ data: newProduct });
+
+  res.status(200).json({ data: updatedProduct });
 });
 
 module.exports = {
