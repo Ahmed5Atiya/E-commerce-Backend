@@ -54,6 +54,17 @@ const getProducts = asyncHandler(async (req, res, next) => {
   } else {
     mongooeQuery = mongooeQuery.select("-__v");
   }
+
+  // 5) applay for the search query
+  // if (req.query.keyword) {
+  //   console.log(req.query.keyword);
+  //   let searchBy = {};
+  //   searchBy.$or = [
+  //     { title: { $regex: req.query.keyword, $options: "i" } },
+  //     { description: { $regex: req.query.keyword, $options: "i" } },
+  //   ];
+  //   mongooeQuery = mongooeQuery.find(searchBy);
+  // }
   // build the model object
   const products = await mongooeQuery;
   res.status(200).json({ results: products.length, page, data: products });
