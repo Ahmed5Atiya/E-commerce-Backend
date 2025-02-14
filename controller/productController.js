@@ -46,6 +46,14 @@ const getProducts = asyncHandler(async (req, res, next) => {
   } else {
     mongooeQuery = mongooeQuery.sort("-createdAt");
   }
+
+  // 4) applay the Fields limiting
+  if (req.query.fields) {
+    let fields = req.query.fields.split(",").join(" ");
+    mongooeQuery = mongooeQuery.select(fields);
+  } else {
+    mongooeQuery = mongooeQuery.select("-__v");
+  }
   // build the model object
   const products = await mongooeQuery;
   res.status(200).json({ results: products.length, page, data: products });
