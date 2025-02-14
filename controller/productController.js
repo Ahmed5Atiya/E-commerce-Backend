@@ -17,14 +17,30 @@ const createProduct = asyncHandler(async (req, res, next) => {
   // Send response
   res.status(201).json({ product });
 });
+
 const getProducts = asyncHandler(async (req, res, next) => {
+  // create filter for products
+  const queryStringObj = { ...req.query };
+  const ExitQueryString = ["sort", "limit", "page", "fields"];
+  ExitQueryString.forEach((field) => delete queryStringObj[field]);
+
+  // applay the filter fot (gte , gt ,lte , le ) fot the porduct
+  let QueryStr = JSON.stringify(queryStringObj);
+  QueryStr = QueryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+
+  // Pagination the query string
   const page = req.query.page * 1 || 1;
   const limit = req.query.limit * 1 || 6;
   const skip = (page - 1) * limit;
-  const products = await Product.find({})
+
+  // create the model instance
+  const CreateProduct = Product.find(JSON.parse(QueryStr))
     .skip(skip)
     .limit(limit)
     .populate({ path: "category", select: "name -_id" });
+
+  // build the model object
+  const products = await CreateProduct;
   res.status(200).json({ results: products.length, page, data: products });
 });
 
