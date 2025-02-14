@@ -19,28 +19,35 @@ const createProduct = asyncHandler(async (req, res, next) => {
 });
 
 const getProducts = asyncHandler(async (req, res, next) => {
-  // create filter for products
+  // 1) create filter for products
   const queryStringObj = { ...req.query };
   const ExitQueryString = ["sort", "limit", "page", "fields"];
   ExitQueryString.forEach((field) => delete queryStringObj[field]);
-
   // applay the filter fot (gte , gt ,lte , le ) fot the porduct
   let QueryStr = JSON.stringify(queryStringObj);
   QueryStr = QueryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
 
-  // Pagination the query string
+  // 2) Pagination the query string
   const page = req.query.page * 1 || 1;
   const limit = req.query.limit * 1 || 6;
   const skip = (page - 1) * limit;
 
   // create the model instance
-  const CreateProduct = Product.find(JSON.parse(QueryStr))
+  let mongooeQuery = Product.find(JSON.parse(QueryStr))
     .skip(skip)
     .limit(limit)
     .populate({ path: "category", select: "name -_id" });
 
+  // 3)  applay the sort for the product
+  if (req.query.sort) {
+    // to make the sort form query to be (price quantity) not (price,quentity)
+    let sortBy = req.query.sort.split(",").join(" ");
+    mongooeQuery = mongooeQuery.sort(sortBy);
+  } else {
+    mongooeQuery = mongooeQuery.sort("-createdAt");
+  }
   // build the model object
-  const products = await CreateProduct;
+  const products = await mongooeQuery;
   res.status(200).json({ results: products.length, page, data: products });
 });
 
