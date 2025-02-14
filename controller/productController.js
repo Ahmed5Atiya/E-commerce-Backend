@@ -25,8 +25,10 @@ const getProducts = asyncHandler(async (req, res, next) => {
     .pagination()
     .Limitfields()
     .filter();
-  // .populate({ path: "category", select: "name -_id" });
-  const products = await apiFeatures.mongooseQuery;
+  const products = await apiFeatures.mongooseQuery.populate({
+    path: "category",
+    select: "name -_id",
+  });
   res.status(200).json({ results: products.length, data: products });
 });
 
