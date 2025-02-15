@@ -20,16 +20,20 @@ const createProduct = asyncHandler(async (req, res, next) => {
 
 const getProducts = asyncHandler(async (req, res, next) => {
   // create the model instance
+  let numberProfuct = await Product.countDocuments();
   let apiFeatures = new ApiFeature(Product.find(), req.query)
     .sort()
-    .pagination()
+    .pagination(numberProfuct)
     .Limitfields()
     .filter();
-  const products = await apiFeatures.mongooseQuery.populate({
+  const { mongooseQuery, paginationResult } = apiFeatures;
+  const products = await mongooseQuery.populate({
     path: "category",
     select: "name -_id",
   });
-  res.status(200).json({ results: products.length, data: products });
+  res
+    .status(200)
+    .json({ results: products.length, paginationResult, data: products });
 });
 
 const getProduct = asyncHandler(async (req, res, next) => {

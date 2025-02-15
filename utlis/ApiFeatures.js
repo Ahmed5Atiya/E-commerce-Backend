@@ -36,11 +36,25 @@ class ApiFeature {
     return this;
   }
 
-  pagination() {
+  pagination(countDecoment) {
     const page = this.QueryString.page * 1 || 1;
     const limit = this.QueryString.limit * 1 || 50;
     const skip = (page - 1) * limit;
+    const endIndex = page * limit;
+
+    const paginat = {};
+    paginat.page = page;
+    paginat.limit = limit;
+    paginat.numberPages = Math.ceil(countDecoment / limit);
+    // prev and next page
+    if (endIndex < countDecoment) {
+      paginat.next = page + 1;
+    }
+    if (skip > 0) {
+      paginat.prev = page - 1;
+    }
     this.mongooseQuery = this.mongooseQuery.limit(limit).skip(skip);
+    this.paginationResult = paginat;
     return this;
   }
 

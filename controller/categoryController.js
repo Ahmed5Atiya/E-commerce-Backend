@@ -3,14 +3,22 @@ const CategorySchema = require("../model/category");
 const expressAsyncHandler = require("express-async-handler");
 const asyncHandler = require("express-async-handler");
 const ApiError = require("../utlis/globalError");
+const ApiFeature = require("../utlis/ApiFeatures");
 const getAllCategorys = async (req, res) => {
-  const query = req.query;
-  const page = query.page * 1 || 1;
-  const limit = query.limit * 1 || 5;
-  const skip = (page - 1) * limit;
-  const product = await CategorySchema.find({}).skip(skip).limit(limit);
+  // const query = req.query;
+  // const page = query.page * 1 || 1;
+  // const limit = query.limit * 1 || 5;
+  // const skip = (page - 1) * limit;
+  let numberProfuct = await CategorySchema.countDocuments();
+  const apiFeatures = new ApiFeature(CategorySchema.find(), req.query)
+    .sort()
+    .filter()
+    .pagination(numberProfuct)
+    .Limitfields();
+  let { paginationResult, mongooseQuery } = apiFeatures;
+  const product = await mongooseQuery;
 
-  res.json({ result: product.length, page, data: product });
+  res.json({ result: product.length, paginationResult, data: product });
 };
 const getASingleCategory = async (req, res) => {
   const { id } = req.params;
