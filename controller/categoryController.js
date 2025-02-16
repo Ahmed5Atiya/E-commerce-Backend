@@ -4,6 +4,21 @@ const expressAsyncHandler = require("express-async-handler");
 const asyncHandler = require("express-async-handler");
 const ApiError = require("../utlis/globalError");
 const ApiFeature = require("../utlis/ApiFeatures");
+// how to upload files
+const multer = require("multer");
+const DiskStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/categores");
+  },
+  filename: function (req, file, cb) {
+    const ext = file.mimetype.split("/")[1];
+    const fileName = `categores-${Date.now()}.${ext}`;
+    console.log(fileName);
+    cb(null, fileName);
+  },
+});
+const upload = multer({ storage: DiskStorage });
+const uploadHandler = upload.single("image");
 const getAllCategorys = async (req, res) => {
   // const query = req.query;
   // const page = query.page * 1 || 1;
@@ -61,4 +76,5 @@ module.exports = {
   ubdateCategory,
   addCategory,
   deleteCategory,
+  uploadHandler,
 };

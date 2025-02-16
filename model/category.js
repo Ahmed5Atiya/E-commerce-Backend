@@ -32,6 +32,7 @@ const categoryModel = new mongoose.Schema(
       type: String,
       lowercase: true,
     },
+    image: String,
   },
   { timestamps: true }
 );

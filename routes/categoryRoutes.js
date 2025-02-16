@@ -5,6 +5,7 @@ const {
   addCategory,
   ubdateCategory,
   deleteCategory,
+  uploadHandler,
 } = require("../controller/categoryController");
 const express = require("express");
 const validationCategory = require("../middleware/validationMiddlerware");
@@ -20,7 +21,7 @@ const router = express.Router();
 router.use("/:categoryId/subcategory", subCategoryRouter);
 router.get("/", getAllCategorys);
 router.get("/:id", getCategoryValidation, getASingleCategory);
-router.post("/", createCategoryValidation, addCategory);
+router.post("/", uploadHandler, createCategoryValidation, addCategory);
 router.put("/:id", ubdateCategoryValidation, ubdateCategory);
 router.delete("/:id", deleteCategoryValidation, deleteCategory);
 
