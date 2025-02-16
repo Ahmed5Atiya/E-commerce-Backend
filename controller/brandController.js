@@ -39,14 +39,14 @@ const addBrand = async (req, res) => {
   await brand.save();
   res.json({ brand });
 };
-const ubdateBrand = async (req, res) => {
-  const { name } = req.body;
+const ubdateBrand = async (req, res, next) => {
   const { id } = req.params;
-  const brand = await BrandSchema.findByIdAndUpdate(
-    id,
-    { name: name },
-    { new: true }
-  );
+  if (req.body.name) {
+    req.body.slug = slugify(req.body.name);
+  }
+  const brand = await BrandSchema.findByIdAndUpdate(id, req.body, {
+    new: true,
+  });
   if (!brand) {
     const error = ApiError.create(
       "this product id not found to delete it",

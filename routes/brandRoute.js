@@ -20,7 +20,13 @@ const router = express.Router();
 router.get("/", getAllBrands);
 router.get("/:id", getBrandValidation, getASingleBrand);
 router.post("/", uploadHandler, processImage, createBrandValidation, addBrand);
-router.put("/:id", ubdateBrandValidations, ubdateBrand);
+router.put(
+  "/:id",
+  uploadHandler,
+  processImage,
+  ubdateBrandValidations,
+  ubdateBrand
+);
 router.delete("/:id", deleteBrandValidation, deleteBrand);
 
 module.exports = router;

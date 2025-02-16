@@ -69,13 +69,13 @@ const addCategory = async (req, res) => {
   res.json({ product });
 };
 const ubdateCategory = async (req, res) => {
-  const { name } = req.body;
   const { id } = req.params;
-  const product = await CategorySchema.findByIdAndUpdate(
-    id,
-    { name: name },
-    { new: true }
-  );
+  if (req.body.name) {
+    req.body.slug = slugify(req.body.name);
+  }
+  const product = await CategorySchema.findByIdAndUpdate(id, req.body, {
+    new: true,
+  });
   res.json({ product });
 };
 
