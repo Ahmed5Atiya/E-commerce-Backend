@@ -4,19 +4,21 @@ const expressAsyncHandler = require("express-async-handler");
 const asyncHandler = require("express-async-handler");
 const ApiError = require("../utlis/globalError");
 const ApiFeature = require("../utlis/ApiFeatures");
+const sharp = require("sharp");
 // how to upload files
 const multer = require("multer");
-const DiskStorage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/categores");
-  },
-  filename: function (req, file, cb) {
-    const ext = file.mimetype.split("/")[1];
-    const fileName = `categores-${Date.now()}.${ext}`;
-    console.log(fileName);
-    cb(null, fileName);
-  },
-});
+// const DiskStorage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, "uploads/categores");
+//   },
+//   filename: function (req, file, cb) {
+//     const ext = file.mimetype.split("/")[1];
+//     const fileName = `categores-${Date.now()}.${ext}`;
+//     console.log(fileName);
+//     cb(null, fileName);
+//   },
+// });
+const multerStorage = multer.memoryStorage();
 const filterFile = (req, file, cb) => {
   if (file.mimetype.startsWith("image")) {
     cb(null, true);
@@ -24,7 +26,17 @@ const filterFile = (req, file, cb) => {
     cb(ApiError.create("allowed  for only images ", 400, "fail"), false);
   }
 };
-const upload = multer({ storage: DiskStorage, fileFilter: filterFile });
+const processImage = async (req, res, next) => {
+  console.log(req.file);
+  const fileName = `categores-${Date.now()}}`;
+  await sharp(req.file.buffer)
+    .resize(650, 650)
+    .toFormat("jpeg")
+    .jpeg({ quality: 95 })
+    .toFile(`uploads/categores/${fileName}.jpeg`);
+  next();
+};
+const upload = multer({ storage: multerStorage, fileFilter: filterFile });
 const uploadHandler = upload.single("image");
 const getAllCategorys = async (req, res) => {
   // const query = req.query;
@@ -84,4 +96,5 @@ module.exports = {
   addCategory,
   deleteCategory,
   uploadHandler,
+  processImage,
 };
