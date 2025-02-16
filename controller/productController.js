@@ -4,6 +4,51 @@ const Product = require("../model/product");
 const ApiError = require("../utlis/globalError");
 const { default: slugify } = require("slugify");
 const ApiFeature = require("../utlis/ApiFeatures");
+const multer = require("multer");
+const sharp = require("sharp");
+
+const multerStorage = multer.memoryStorage();
+const FilterImage = (req, file, cb) => {
+  if (file.mimetype.startsWith("image")) {
+    cb(null, true);
+  } else {
+    cb(ApiError.create("allowd only for the image ", 400, fail), false);
+  }
+};
+const upload = multer({ storage: multerStorage, fileFilter: FilterImage });
+const uploadFiles = upload.fields([
+  { name: "imageCover", maxCount: 1 },
+  { name: "images", maxCount: 5 },
+]);
+const processImage = async (req, res, next) => {
+  if (req.files.imageCover) {
+    const imageCoverFileName = `product-${Date.now()}-imageCover.jpeg`;
+    // this is for single image files imageCover
+    await sharp(req.files.imageCover[0].buffer)
+      .resize(900, 800)
+      .toFormat("jpeg")
+      .jpeg({ quality: 95 })
+      .toFile(`uploads/products/${imageCoverFileName}`);
+    req.body.imageCover = imageCoverFileName;
+  }
+  if (req.files.images) {
+    req.body.images = [];
+    // this to await the function to finish processing
+    await Promise.all(
+      req.files.images.map(async (img, index) => {
+        const imageName = `product-${Date.now()}-images-${index + 1}.jpeg`;
+        // this is for array of  images files for images
+        await sharp(img.buffer)
+          .resize(900, 800)
+          .toFormat("jpeg")
+          .jpeg({ quality: 95 })
+          .toFile(`uploads/products/${imageName}`);
+        req.body.images.push(imageName);
+      })
+    );
+  }
+  next();
+};
 const createProduct = asyncHandler(async (req, res, next) => {
   const productData = req.body;
   // Generate slug if not provided
@@ -81,4 +126,6 @@ module.exports = {
   getProduct,
   deleteProduct,
   updateProduct,
+  uploadFiles,
+  processImage,
 };
