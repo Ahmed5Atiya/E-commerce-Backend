@@ -5,6 +5,8 @@ const {
   addBrand,
   ubdateBrand,
   deleteBrand,
+  uploadHandler,
+  processImage,
 } = require("../controller/brandController");
 const {
   getBrandValidation,
@@ -17,7 +19,7 @@ const router = express.Router();
 
 router.get("/", getAllBrands);
 router.get("/:id", getBrandValidation, getASingleBrand);
-router.post("/", createBrandValidation, addBrand);
+router.post("/", uploadHandler, processImage, createBrandValidation, addBrand);
 router.put("/:id", ubdateBrandValidations, ubdateBrand);
 router.delete("/:id", deleteBrandValidation, deleteBrand);
 
