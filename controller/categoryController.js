@@ -28,12 +28,13 @@ const filterFile = (req, file, cb) => {
 };
 const processImage = async (req, res, next) => {
   console.log(req.file);
-  const fileName = `categores-${Date.now()}}`;
+  const fileName = `categores-${Date.now()}.jpeg`;
   await sharp(req.file.buffer)
     .resize(650, 650)
     .toFormat("jpeg")
     .jpeg({ quality: 95 })
-    .toFile(`uploads/categores/${fileName}.jpeg`);
+    .toFile(`uploads/categores/${fileName}`);
+  req.body.image = fileName;
   next();
 };
 const upload = multer({ storage: multerStorage, fileFilter: filterFile });
@@ -61,8 +62,9 @@ const getASingleCategory = async (req, res) => {
   res.json({ product });
 };
 const addCategory = async (req, res) => {
-  const { name } = req.body;
-  const product = new CategorySchema({ name, slug: slugify(name) });
+  // const { name } = req.body;
+  req.body.slug = slugify(req.body.name);
+  const product = new CategorySchema(req.body);
   await product.save();
   res.json({ product });
 };

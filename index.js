@@ -1,3 +1,4 @@
+const path = require("path");
 const express = require("express");
 const dotenv = require("dotenv");
 var morgan = require("morgan");
@@ -18,8 +19,9 @@ const connectToDb = async () => {
   // }
 };
 connectToDb();
-
 app.use(express.json());
+// Serve static files from the "uploads" directory and its subdirectories
+app.use(express.static(path.join(__dirname, "uploads/categores")));
 app.use(morgan("combined"));
 app.use("/api/v1/category", CategoryRouter);
 app.use("/api/v1/subcategory", subCategoryRouter);
