@@ -68,7 +68,17 @@ const addCategory = async (req, res) => {
   await product.save();
   res.json({ product });
 };
-const ubdateCategory = async (req, res) => {
+// const ubdateCategory = async (req, res) => {
+//   const { id } = req.params;
+//   if (req.body.name) {
+//     req.body.slug = slugify(req.body.name);
+//   }
+//   const product = await CategorySchema.findByIdAndUpdate(id, req.body, {
+//     new: true,
+//   });
+//   res.json({ product });
+// };
+const ubdateCategory = async (req, res, next) => {
   const { id } = req.params;
   if (req.body.name) {
     req.body.slug = slugify(req.body.name);
@@ -76,9 +86,16 @@ const ubdateCategory = async (req, res) => {
   const product = await CategorySchema.findByIdAndUpdate(id, req.body, {
     new: true,
   });
+  if (!product) {
+    const error = ApiError.create(
+      "this product id not found to delete it",
+      404,
+      "Fail"
+    );
+    return next(error);
+  }
   res.json({ product });
 };
-
 const deleteCategory = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
   const product = await CategorySchema.findByIdAndDelete({

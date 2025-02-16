@@ -15,6 +15,18 @@ const BrandModel = new mongoose.Schema(
   },
   { timestamps: true }
 );
+BrandModel.post("init", (doc) => {
+  if (doc.image) {
+    const imageUrl = `${process.env.BASE_URL}/brands/${doc.image}`;
+    doc.image = imageUrl;
+  }
+});
 
+BrandModel.post("save", (doc) => {
+  if (doc.image) {
+    const imageUrl = `${process.env.BASE_URL}/brands/${doc.image}`;
+    doc.image = imageUrl;
+  }
+});
 const BrandSchema = mongoose.model("Brand", BrandModel); // Fixed typo
 module.exports = BrandSchema;

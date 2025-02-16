@@ -29,7 +29,13 @@ router.post(
   createCategoryValidation,
   addCategory
 );
-router.put("/:id", ubdateCategoryValidation, ubdateCategory);
+router.put(
+  "/:id",
+  uploadHandler,
+  processImage,
+  ubdateCategoryValidation,
+  ubdateCategory
+);
 router.delete("/:id", deleteCategoryValidation, deleteCategory);
 
 module.exports = router;

@@ -36,6 +36,19 @@ const categoryModel = new mongoose.Schema(
   },
   { timestamps: true }
 );
+// this is for to add all the url for the images in database by using the mongoose middleware
+categoryModel.post("init", (doc) => {
+  if (doc.image) {
+    const imageUrl = `${process.env.BASE_URL}/categores/${doc.image}`;
+    doc.image = imageUrl;
+  }
+});
 
+categoryModel.post("save", (doc) => {
+  if (doc.image) {
+    const imageUrl = `${process.env.BASE_URL}/categores/${doc.image}`;
+    doc.image = imageUrl;
+  }
+});
 const CategorySchema = mongoose.model("Category", categoryModel); // Fixed typo
 module.exports = CategorySchema;

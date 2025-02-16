@@ -16,11 +16,6 @@ exports.createCategoryValidation = [
 ];
 
 exports.ubdateCategoryValidation = [
-  check("name")
-    .notEmpty()
-    .withMessage("the name is require")
-    .isLength({ min: 6, max: 32 })
-    .withMessage("the name for category should by min 6 char"),
   check("id").isMongoId().withMessage("the id should be valid "),
   validationCategory,
 ];
