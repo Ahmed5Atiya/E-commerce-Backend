@@ -17,7 +17,14 @@ const DiskStorage = multer.diskStorage({
     cb(null, fileName);
   },
 });
-const upload = multer({ storage: DiskStorage });
+const filterFile = (req, file, cb) => {
+  if (file.mimetype.startsWith("image")) {
+    cb(null, true);
+  } else {
+    cb(ApiError.create("allowed  for only images ", 400, "fail"), false);
+  }
+};
+const upload = multer({ storage: DiskStorage, fileFilter: filterFile });
 const uploadHandler = upload.single("image");
 const getAllCategorys = async (req, res) => {
   // const query = req.query;
