@@ -49,7 +49,17 @@ exports.createUserValidation = [
     .notEmpty()
     .withMessage("Please enter your password")
     .isLength({ min: 6 })
-    .withMessage("Please enter your password at least 6 characters "),
+    .withMessage("Please enter your password at least 6 characters ")
+    .custom((password, { req }) => {
+      if (password !== req.body.passwordConfirm) {
+        throw new Error("the password and passwordConfirm fields do not match");
+      }
+      return true;
+    }),
+  check("passwordConfirm")
+    .notEmpty()
+    .withMessage("Please enter your passwordConfirm"),
+
   check("phone")
     .notEmpty()
     .withMessage("Please enter your phone number")
