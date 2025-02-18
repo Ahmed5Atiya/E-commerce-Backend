@@ -3,7 +3,7 @@ const userModel = require("../model/user");
 const ApiFeature = require("../utlis/ApiFeatures");
 const sharp = require("sharp");
 const { uploadSingleImage } = require("../utlis/uploadSingleImage");
-
+const bcrypt = require("bcryptjs");
 const processImage = async (req, res, next) => {
   const fileName = `users-${Date.now()}.jpeg`;
   if (req.file) {
@@ -52,7 +52,28 @@ const updateUser = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
   const newUser = await userModel.findByIdAndUpdate(
     id,
-    { $set: req.body }, // Use $set to update specific fields
+    {
+      name: req.body.name,
+      email: req.body.email,
+      role: req.body.role,
+      profileImage: req.body.profileImage,
+      phone: req.body.phone,
+    }, // Use $set to update specific fields
+    { new: true }
+  );
+  if (!newUser) {
+    const error = ApiError.create("this user id not found", 404, "Fail");
+    return next(error);
+  }
+
+  res.status(200).json({ user: newUser });
+});
+const updateUserPassword = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+  const newUser = await userModel.findByIdAndUpdate(
+    id,
+    { password: await bcrypt.hash(req.body.password, 12) }, // Use $set to update specific fields
+    // { $set: req.body }, // Use $set to update specific fields
     { new: true }
   );
   if (!newUser) {
@@ -80,4 +101,5 @@ module.exports = {
   deleteUser,
   uploadHandler,
   processImage,
+  updateUserPassword,
 };

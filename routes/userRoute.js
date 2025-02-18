@@ -7,12 +7,14 @@ const {
   getSingleUser,
   uploadHandler,
   processImage,
+  updateUserPassword,
 } = require("../controller/userController");
 const {
   createUserValidation,
   updateUserValidations,
   deleteUserValidation,
   getUserValidation,
+  updateUserPasswordValidation,
 } = require("../validation/userValidation");
 
 const router = express.Router();
@@ -25,6 +27,11 @@ router.put(
   processImage,
   updateUserValidations,
   updateUser
+);
+router.put(
+  "/changePassword/:id",
+  updateUserPasswordValidation,
+  updateUserPassword
 );
 router.delete("/:id", deleteUserValidation, deleteUser);
 router.get("/:id", getUserValidation, getSingleUser);
