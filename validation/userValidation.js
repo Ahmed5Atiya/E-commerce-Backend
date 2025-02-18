@@ -1,6 +1,7 @@
 const { check, body } = require("express-validator");
 const validationCategory = require("../middleware/validationMiddlerware");
 const { default: slugify } = require("slugify");
+const userModel = require("../model/user");
 
 exports.updateUserValidations = [
   check("id")
@@ -30,6 +31,32 @@ exports.createUserValidation = [
     }
     return true; // Always return true to pass validation
   }),
+  check("email")
+    .notEmpty()
+    .withMessage(" email is required")
+    .isEmail()
+    .withMessage("Please enter a valid email address ")
+    .custom((value) =>
+      userModel.findOne({ email: value }).then((user) => {
+        if (user) {
+          return Promise.reject(
+            new Error("the email address are already is used")
+          );
+        }
+      })
+    ),
+  check("password")
+    .notEmpty()
+    .withMessage("Please enter your password")
+    .isLength({ min: 6 })
+    .withMessage("Please enter your password at least 6 characters "),
+  check("phone")
+    .notEmpty()
+    .withMessage("Please enter your phone number")
+    .isMobilePhone("ar-EG")
+    .withMessage("your phone number not available for this region"),
+  check("role").optional(),
+  check("profileImage").optional(),
   validationCategory,
 ];
 
