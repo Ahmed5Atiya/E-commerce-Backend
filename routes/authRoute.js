@@ -1,12 +1,16 @@
 const express = require("express");
-const { SignUp } = require("../controller/aurhController");
+const { SignUp, Login } = require("../controller/aurhController");
 
-const { SignUpValidation } = require("../validation/authValidation");
+const {
+  SignUpValidation,
+  LoginValidation,
+} = require("../validation/authValidation");
 
 const router = express.Router();
 
 // router.get("/", getUsers);
 router.post("/signup", SignUpValidation, SignUp);
+router.post("/login", LoginValidation, Login);
 // router.put(
 //   "/:id",
 //   uploadHandler,

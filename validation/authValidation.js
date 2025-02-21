@@ -2,7 +2,6 @@ const { check, body } = require("express-validator");
 const validationCategory = require("../middleware/validationMiddlerware");
 const { default: slugify } = require("slugify");
 const userModel = require("../model/user");
-const bcrypt = require("bcryptjs");
 
 exports.SignUpValidation = [
   check("name")
@@ -46,6 +45,20 @@ exports.SignUpValidation = [
   check("passwordConfirm")
     .notEmpty()
     .withMessage("Please enter your passwordConfirm"),
+
+  validationCategory,
+];
+exports.LoginValidation = [
+  check("email")
+    .notEmpty()
+    .withMessage(" email is required")
+    .isEmail()
+    .withMessage("Please enter a valid email address "),
+  check("password")
+    .notEmpty()
+    .withMessage("Please enter your password")
+    .isLength({ min: 6 })
+    .withMessage("Please enter your password at least 6 characters "),
 
   validationCategory,
 ];
