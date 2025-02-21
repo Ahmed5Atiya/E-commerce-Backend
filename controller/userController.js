@@ -1,9 +1,11 @@
 const asyncHandler = require("express-async-handler");
 const userModel = require("../model/user");
-const ApiFeature = require("../utlis/ApiFeatures");
+const ApiError = require("../utlis/globalError");
 const sharp = require("sharp");
 const { uploadSingleImage } = require("../utlis/uploadSingleImage");
 const bcrypt = require("bcryptjs");
+const ApiFeature = require("../utlis/ApiFeatures");
+
 const processImage = async (req, res, next) => {
   const fileName = `users-${Date.now()}.jpeg`;
   if (req.file) {
@@ -72,7 +74,10 @@ const updateUserPassword = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
   const newUser = await userModel.findByIdAndUpdate(
     id,
-    { password: await bcrypt.hash(req.body.password, 12) }, // Use $set to update specific fields
+    {
+      password: await bcrypt.hash(req.body.password, 12),
+      passwordChangeAt: Date.now(),
+    }, // Use $set to update specific fields
     // { $set: req.body }, // Use $set to update specific fields
     { new: true }
   );

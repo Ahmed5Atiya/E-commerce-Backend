@@ -41,11 +41,11 @@ const Login = asyncHandler(async (req, res, next) => {
   res.status(200).json({ user: user, token: token });
 });
 
-const Portect = asyncHandler(async (req, res, error) => {
+const Portect = asyncHandler(async (req, res, next) => {
   // 1) check if the token is existing
   let token;
   if (
-    req.headers.authorization ||
+    req.headers.authorization &&
     req.headers.authorization.startsWith("Bearer")
   ) {
     token = req.headers.authorization.split(" ")[1];
@@ -58,10 +58,39 @@ const Portect = asyncHandler(async (req, res, error) => {
     );
     return next(error);
   }
+  // 2) verify token to check if no changes happened (expired tokens , no changes happened)
+  let decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+  console.log(decoded);
 
-  // 2) verify token to check if no changes happened (expired tokens)
+  // 3) check if this user aready existing
+  const currentUser = await userModel.findById(decoded.userId);
+  if (!currentUser) {
+    const error = ApiError.create("this user is not existing", 400, "fail");
+    return next(error);
+  }
+  // 4) check if the user changed their password after creating the token
+  if (currentUser.passwordChangeAt) {
+    // convert the passwordChangeAt from data to timestamp
+    const passwordChangeAtTimeStamp = parseInt(
+      currentUser.passwordChangeAt.getTime() / 1000,
+      10
+    );
+    // check if the user changed their password after the login
+    if (passwordChangeAtTimeStamp > decoded.iat) {
+      const error = ApiError.create(
+        "the password are changed please login again",
+        400,
+        "error"
+      );
+      return next(error);
+    }
+  }
+
+  req.user = currentUser;
+  next();
 });
 module.exports = {
   SignUp,
   Login,
+  Portect,
 };

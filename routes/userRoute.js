@@ -16,6 +16,7 @@ const {
   getUserValidation,
   updateUserPasswordValidation,
 } = require("../validation/userValidation");
+const { Portect } = require("../controller/aurhController");
 
 const router = express.Router();
 
@@ -23,6 +24,7 @@ router.get("/", getUsers);
 router.post("/", uploadHandler, processImage, createUserValidation, createUser);
 router.put(
   "/:id",
+  Portect,
   uploadHandler,
   processImage,
   updateUserValidations,
