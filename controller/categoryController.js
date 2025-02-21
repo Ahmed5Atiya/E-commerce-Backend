@@ -29,12 +29,14 @@ const { uploadSingleImage } = require("../utlis/uploadSingleImage");
 // };
 const processImage = async (req, res, next) => {
   const fileName = `categores-${Date.now()}.jpeg`;
-  await sharp(req.file.buffer)
-    .resize(650, 650)
-    .toFormat("jpeg")
-    .jpeg({ quality: 95 })
-    .toFile(`uploads/categores/${fileName}`);
-  req.body.image = fileName;
+  if (req.file) {
+    await sharp(req.file.buffer)
+      .resize(650, 650)
+      .toFormat("jpeg")
+      .jpeg({ quality: 95 })
+      .toFile(`uploads/categores/${fileName}`);
+    req.body.image = fileName;
+  }
   next();
 };
 // const upload = multer({ storage: multerStorage, fileFilter: filterFile });

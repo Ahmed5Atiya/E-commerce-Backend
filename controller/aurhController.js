@@ -89,8 +89,20 @@ const Portect = asyncHandler(async (req, res, next) => {
   req.user = currentUser;
   next();
 });
+
+// ...values mean make convert ("admin" , "manger") to ["admin", "manger"]
+const allowedTo = (...values) =>
+  asyncHandler(async (req, res, next) => {
+    const user = req.user.role;
+    if (!values.includes(user)) {
+      const error = ApiError.create("You are not allowed", 404, "Fail");
+      return next(error);
+    }
+    next();
+  });
 module.exports = {
   SignUp,
   Login,
   Portect,
+  allowedTo,
 };

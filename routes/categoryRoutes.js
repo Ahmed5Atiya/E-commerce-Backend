@@ -18,12 +18,15 @@ const {
   deleteCategoryValidation,
 } = require("../validation/categoryValidation");
 const subCategoryRouter = require("../routes/subCategoryRoutes");
+const { Portect, allowedTo } = require("../controller/aurhController");
 const router = express.Router();
 router.use("/:categoryId/subcategory", subCategoryRouter);
 router.get("/", getAllCategorys);
 router.get("/:id", getCategoryValidation, getASingleCategory);
 router.post(
   "/",
+  Portect,
+  allowedTo("admin", "manager"),
   uploadHandler,
   processImage,
   createCategoryValidation,
