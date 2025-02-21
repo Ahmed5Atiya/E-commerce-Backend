@@ -23,6 +23,9 @@ const userSchema = new mongoose.Schema(
       type: String,
     },
     passwordChangeAt: Date,
+    passwordResetCode: String,
+    passwordResetVerifid: Boolean,
+    passwordExpirationCode: Date,
     password: {
       type: String,
       required: [true, "the password is required"],

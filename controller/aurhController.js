@@ -1,3 +1,4 @@
+const crypto = require("crypto");
 const asyncHandler = require("express-async-handler");
 const userModel = require("../model/user");
 var jwt = require("jsonwebtoken");
@@ -40,7 +41,29 @@ const Login = asyncHandler(async (req, res, next) => {
   // 3) return the response with the token
   res.status(200).json({ user: user, token: token });
 });
+const forgetPassword = asyncHandler(async (req, res, next) => {
+  // 1) check if the user with this email has already existed
+  const user = await userModel.findOne({ email: req.body.email });
+  if (!user) {
+    const error = ApiError.create("User does not exist", 401, "faild");
+    return next(error);
+  }
 
+  // 2) if the user is existing create the 6 randomly number and hash the resetCode and save it in the db
+  const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+  // here hash the resetCode using the crypto
+  const hashResetCode = crypto
+    .createHash("sha256")
+    .update(resetCode)
+    .digest("hex");
+  // save the hashing the  resetCode  in the db
+  user.passwordResetCode = hashResetCode;
+  // make password reset code expiration to be valid for 10 minutes
+  user.passwordExpirationCode = Date.now() + 10 * 60 * 1000;
+  user.passwordResetVerifid = false;
+
+  await user.save();
+});
 const Portect = asyncHandler(async (req, res, next) => {
   // 1) check if the token is existing
   let token;
@@ -105,4 +128,5 @@ module.exports = {
   Login,
   Portect,
   allowedTo,
+  forgetPassword,
 };
