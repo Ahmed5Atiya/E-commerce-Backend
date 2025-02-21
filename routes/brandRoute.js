@@ -14,19 +14,36 @@ const {
   ubdateBrandValidations,
   deleteBrandValidation,
 } = require("../validation/brandValidation");
+const { Portect, allowedTo } = require("../controller/aurhController");
 
 const router = express.Router();
 
 router.get("/", getAllBrands);
 router.get("/:id", getBrandValidation, getASingleBrand);
-router.post("/", uploadHandler, processImage, createBrandValidation, addBrand);
+router.post(
+  "/",
+  Portect,
+  allowedTo("admin", "manager"),
+  uploadHandler,
+  processImage,
+  createBrandValidation,
+  addBrand
+);
 router.put(
   "/:id",
+  Portect,
+  allowedTo("admin", "manager"),
   uploadHandler,
   processImage,
   ubdateBrandValidations,
   ubdateBrand
 );
-router.delete("/:id", deleteBrandValidation, deleteBrand);
+router.delete(
+  "/:id",
+  Portect,
+  allowedTo("admin", "manager"),
+  deleteBrandValidation,
+  deleteBrand
+);
 
 module.exports = router;

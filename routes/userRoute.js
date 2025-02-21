@@ -16,12 +16,20 @@ const {
   getUserValidation,
   updateUserPasswordValidation,
 } = require("../validation/userValidation");
-const { Portect } = require("../controller/aurhController");
+const { Portect, allowedTo } = require("../controller/aurhController");
 
 const router = express.Router();
 
 router.get("/", getUsers);
-router.post("/", uploadHandler, processImage, createUserValidation, createUser);
+router.post(
+  "/",
+  Portect,
+  allowedTo("admin", "manager"),
+  uploadHandler,
+  processImage,
+  createUserValidation,
+  createUser
+);
 router.put(
   "/:id",
   Portect,
@@ -32,10 +40,18 @@ router.put(
 );
 router.put(
   "/changePassword/:id",
+  Portect,
+  allowedTo("admin", "manager"),
   updateUserPasswordValidation,
   updateUserPassword
 );
-router.delete("/:id", deleteUserValidation, deleteUser);
+router.delete(
+  "/:id",
+  Portect,
+  allowedTo("admin", "manager"),
+  deleteUserValidation,
+  deleteUser
+);
 router.get("/:id", getUserValidation, getSingleUser);
 
 module.exports = router;

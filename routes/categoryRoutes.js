@@ -1,4 +1,3 @@
-const { body, validationResult } = require("express-validator");
 const {
   getAllCategorys,
   getASingleCategory,
@@ -9,9 +8,7 @@ const {
   processImage,
 } = require("../controller/categoryController");
 const express = require("express");
-const validationCategory = require("../middleware/validationMiddlerware");
 const {
-  getCategory,
   getCategoryValidation,
   createCategoryValidation,
   ubdateCategoryValidation,
@@ -34,11 +31,19 @@ router.post(
 );
 router.put(
   "/:id",
+  Portect,
+  allowedTo("admin", "manager"),
   uploadHandler,
   processImage,
   ubdateCategoryValidation,
   ubdateCategory
 );
-router.delete("/:id", deleteCategoryValidation, deleteCategory);
+router.delete(
+  "/:id",
+  Portect,
+  allowedTo("admin", "manager"),
+  deleteCategoryValidation,
+  deleteCategory
+);
 
 module.exports = router;

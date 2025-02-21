@@ -14,14 +14,15 @@ const {
   updateProductValidation,
   createProductValidation,
 } = require("../validation/product");
-
-console.log(createProduct); // Should print the function definition
+const { Portect, allowedTo } = require("../controller/aurhController");
 
 const router = express.Router();
 router.get("/", getProducts);
 router.get("/:id", getProductValidation, getProduct);
 router.post(
   "/",
+  Portect,
+  allowedTo("admin", "manager"),
   uploadFiles,
   processImage,
   createProductValidation,
@@ -29,11 +30,19 @@ router.post(
 );
 router.put(
   "/:id",
+  Portect,
+  allowedTo("admin", "manager"),
   uploadFiles,
   processImage,
   updateProductValidation,
   updateProduct
 );
-router.delete("/:id", deleteProductValidation, deleteProduct);
+router.delete(
+  "/:id",
+  Portect,
+  allowedTo("admin", "manager"),
+  deleteProductValidation,
+  deleteProduct
+);
 
 module.exports = router;
