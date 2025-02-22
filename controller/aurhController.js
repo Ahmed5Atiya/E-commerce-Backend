@@ -4,6 +4,7 @@ const userModel = require("../model/user");
 var jwt = require("jsonwebtoken");
 const ApiError = require("../utlis/globalError");
 const bcrypt = require("bcryptjs");
+const { sendTheEmail } = require("../utlis/sendEmail");
 
 const generateToken = (payload) => {
   return jwt.sign({ userId: payload }, process.env.JWT_SECRET_KEY, {
@@ -61,8 +62,31 @@ const forgetPassword = asyncHandler(async (req, res, next) => {
   // make password reset code expiration to be valid for 10 minutes
   user.passwordExpirationCode = Date.now() + 10 * 60 * 1000;
   user.passwordResetVerifid = false;
-
   await user.save();
+
+  // send the code to email
+  const message = `Hi  ${user.name} , \n we send  your reset code form E-commerce website reset cose is \n ${resetCode} \n please enter your reset code in website`;
+  try {
+    await sendTheEmail({
+      email: user.email,
+      subject: "your resetCode are valid for 10 minutes ",
+      message: message,
+    });
+  } catch (err) {
+    user.passwordResetVerifid = undefined;
+    user.passwordResetCode = undefined; //
+    user.passwordExpirationCode = undefined; //
+
+    await user.save();
+    const error = ApiError.create(
+      "ther is error happen in sending email",
+      401,
+      "faild"
+    );
+    return next(error);
+  }
+
+  res.status(201).json({ message: " your resetCode send successfully" });
 });
 const Portect = asyncHandler(async (req, res, next) => {
   // 1) check if the token is existing
