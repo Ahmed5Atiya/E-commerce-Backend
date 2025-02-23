@@ -88,6 +88,32 @@ const forgetPassword = asyncHandler(async (req, res, next) => {
 
   res.status(201).json({ message: " your resetCode send successfully" });
 });
+
+const verifyResetCode = asyncHandler(async (req, res, next) => {
+  console.log(req.body.resetCode);
+  const code = req.body.resetCode;
+  const hashResetCode = crypto.createHash("sha256").update(code).digest("hex");
+  const user = await userModel.findOne({
+    passwordResetCode: hashResetCode,
+  });
+
+  if (!user) {
+    const error = ApiError.create(
+      "this user or reset code not exists",
+      401,
+      "faild"
+    );
+    return next(error);
+  }
+  if (user.passwordExpirationCode < Date.now()) {
+    const error = ApiError.create("this resetCode is expired ", 401, "faild");
+    return next(error);
+  }
+  user.passwordResetVerifid = true;
+  await user.save();
+  const token = generateToken(user._id);
+  res.status(200).json({ success: "success submit resetCode", token: token });
+});
 const Portect = asyncHandler(async (req, res, next) => {
   // 1) check if the token is existing
   let token;
@@ -153,4 +179,5 @@ module.exports = {
   Portect,
   allowedTo,
   forgetPassword,
+  verifyResetCode,
 };
