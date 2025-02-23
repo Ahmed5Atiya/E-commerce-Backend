@@ -128,6 +128,18 @@ const updateLoggedUserPassword = asyncHandler(async (req, res, next) => {
   const token = generateToken(user._id);
   res.status(200).json({ user: user, token: token });
 });
+const updateLoggedUser = asyncHandler(async (req, res, next) => {
+  const updateUser = await userModel.findByIdAndUpdate(
+    req.user._id,
+    {
+      name: req.body.name,
+      email: req.body.email,
+      phone: req.body.phone,
+    }, // Use $set to update specific fields
+    { new: true }
+  );
+  res.status(200).json({ user: updateUser });
+});
 module.exports = {
   getUsers,
   createUser,
@@ -139,4 +151,5 @@ module.exports = {
   updateUserPassword,
   getLoggedInUser,
   updateLoggedUserPassword,
+  updateLoggedUser,
 };

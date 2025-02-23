@@ -10,6 +10,7 @@ const {
   updateUserPassword,
   getLoggedInUser,
   updateLoggedUserPassword,
+  updateLoggedUser,
 } = require("../controller/userController");
 const {
   createUserValidation,
@@ -18,6 +19,7 @@ const {
   getUserValidation,
   updateUserPasswordValidation,
   updateLoggedUserPasswordValidation,
+  updateLoggedUserDataValidation,
 } = require("../validation/userValidation");
 const { Portect, allowedTo } = require("../controller/aurhController");
 
@@ -25,6 +27,12 @@ const router = express.Router();
 
 router.get("/", getUsers);
 router.get("/getMe", Portect, getLoggedInUser);
+router.put(
+  "/updateMe",
+  Portect,
+  updateLoggedUserDataValidation,
+  updateLoggedUser
+);
 router.put(
   "/updateLoggedUserPassword",
   Portect,
