@@ -11,6 +11,7 @@ const {
   getLoggedInUser,
   updateLoggedUserPassword,
   updateLoggedUser,
+  deleteLoggedUer,
 } = require("../controller/userController");
 const {
   createUserValidation,
@@ -33,6 +34,7 @@ router.put(
   updateLoggedUserDataValidation,
   updateLoggedUser
 );
+router.delete("/deleteMe", Portect, deleteLoggedUer);
 router.put(
   "/updateLoggedUserPassword",
   Portect,

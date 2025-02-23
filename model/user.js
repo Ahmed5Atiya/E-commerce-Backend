@@ -22,6 +22,10 @@ const userSchema = new mongoose.Schema(
     profileImage: {
       type: String,
     },
+    active: {
+      type: Boolean,
+      default: true,
+    },
     passwordChangeAt: Date,
     passwordResetCode: String,
     passwordResetVerifid: Boolean,

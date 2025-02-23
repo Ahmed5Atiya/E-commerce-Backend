@@ -140,6 +140,12 @@ const updateLoggedUser = asyncHandler(async (req, res, next) => {
   );
   res.status(200).json({ user: updateUser });
 });
+
+const deleteLoggedUer = asyncHandler(async (req, res) => {
+  await userModel.findByIdAndUpdate(req.user._id, { active: false });
+
+  res.status(200).json({ message: " successfully Deactive user" });
+});
 module.exports = {
   getUsers,
   createUser,
@@ -152,4 +158,5 @@ module.exports = {
   getLoggedInUser,
   updateLoggedUserPassword,
   updateLoggedUser,
+  deleteLoggedUer,
 };
