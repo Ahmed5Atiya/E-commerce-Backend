@@ -4,6 +4,7 @@ const {
   Login,
   forgetPassword,
   verifyResetCode,
+  resetPassword,
 } = require("../controller/aurhController");
 
 const {
@@ -17,7 +18,8 @@ const router = express.Router();
 router.post("/signup", SignUpValidation, SignUp);
 router.post("/login", LoginValidation, Login);
 router.post("/forgetPassword", forgetPassword);
-router.put("/verifyResetCode", verifyResetCode);
+router.post("/verifyResetCode", verifyResetCode);
+router.put("/resetPassword", resetPassword);
 // router.put(
 //   "/:id",
 //   uploadHandler,

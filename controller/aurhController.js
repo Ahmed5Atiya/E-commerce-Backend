@@ -34,7 +34,7 @@ const Login = asyncHandler(async (req, res, next) => {
 
   if (!user || !(await bcrypt.compare(req.body.password, user.password))) {
     return next(
-      ApiError.create(404, "This product is not available", "failed")
+      ApiError.create("invalid user email or password", 404, "failed")
     ); // Corrected typo
   }
   //   2) create the token for the user
@@ -111,8 +111,29 @@ const verifyResetCode = asyncHandler(async (req, res, next) => {
   }
   user.passwordResetVerifid = true;
   await user.save();
+  // const token = generateToken(user._id);
+  res.status(200).json({ success: "success submit resetCode" });
+});
+
+const resetPassword = asyncHandler(async (req, res, next) => {
+  const user = await userModel.findOne({ email: req.body.email });
+  if (!user) {
+    const error = ApiError.create("User does not exist", 401, "faild");
+    return next(error);
+  }
+  if (!user.passwordResetVerifid) {
+    const error = ApiError.create("the reset Code not Verifid", 401, "faild");
+    return next(error);
+  }
+
+  user.password = req.body.newPassword;
+  user.passwordExpirationCode = undefined;
+  user.passwordResetVerifid = undefined;
+  user.passwordResetCode = undefined;
+  await user.save();
   const token = generateToken(user._id);
-  res.status(200).json({ success: "success submit resetCode", token: token });
+
+  res.status(200).json({ message: "password reset successful", token: token });
 });
 const Portect = asyncHandler(async (req, res, next) => {
   // 1) check if the token is existing
@@ -180,4 +201,5 @@ module.exports = {
   allowedTo,
   forgetPassword,
   verifyResetCode,
+  resetPassword,
 };
