@@ -5,6 +5,7 @@ const sharp = require("sharp");
 const { uploadSingleImage } = require("../utlis/uploadSingleImage");
 const bcrypt = require("bcryptjs");
 const ApiFeature = require("../utlis/ApiFeatures");
+const { generateToken } = require("../utlis/generateToken");
 
 const processImage = async (req, res, next) => {
   const fileName = `users-${Date.now()}.jpeg`;
@@ -107,6 +108,26 @@ const getLoggedInUser = asyncHandler(async (req, res, next) => {
   }
   res.status(200).json({ user: user });
 });
+const updateLoggedUserPassword = asyncHandler(async (req, res, next) => {
+  const user = await userModel.findByIdAndUpdate(
+    req.user._id,
+    {
+      password: await bcrypt.hash(req.body.password, 12),
+      passwordChangeAt: Date.now(),
+    }, // Use $set to update specific fields
+    // { $set: req.body }, // Use $set to update specific fields
+    { new: true }
+  );
+
+  if (!user) {
+    const error = ApiError.create("this user id not found", 404, "Fail");
+    return next(error);
+  }
+
+  // generate a new token for the user
+  const token = generateToken(user._id);
+  res.status(200).json({ user: user, token: token });
+});
 module.exports = {
   getUsers,
   createUser,
@@ -117,4 +138,5 @@ module.exports = {
   processImage,
   updateUserPassword,
   getLoggedInUser,
+  updateLoggedUserPassword,
 };

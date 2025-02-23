@@ -108,6 +108,40 @@ exports.updateUserPasswordValidation = [
 
   validationCategory,
 ];
+exports.updateLoggedUserPasswordValidation = [
+  check("currentPassword")
+    .notEmpty()
+    .withMessage("Please enter your current Password"),
+  check("passwordConfirm")
+    .notEmpty()
+    .withMessage("Please enter your password Confirm"),
+  check("password")
+    .notEmpty()
+    .withMessage("Please enter your password")
+    .isLength({ min: 6 })
+    .withMessage("Please enter your password at least 6 characters ")
+    .custom(async (password, { req }) => {
+      // 1) check if the current password is correct
+      const user = await userModel.findById({ _id: req.user._id });
+      if (!user) {
+        throw new Error("user not found");
+      }
+      const isCorrectPassword = await bcrypt.compare(
+        req.body.currentPassword,
+        user.password
+      );
+      if (!isCorrectPassword) {
+        throw new Error("incorrect current password");
+      }
+      // 2) check if the password and password confirm is matches
+      if (password !== req.body.passwordConfirm) {
+        throw new Error("the password and passwordConfirm fields do not match");
+      }
+      return true;
+    }),
+
+  validationCategory,
+];
 
 exports.deleteUserValidation = [
   check("id").isMongoId().withMessage("the id must be valid"),

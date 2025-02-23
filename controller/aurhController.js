@@ -154,8 +154,6 @@ const Portect = asyncHandler(async (req, res, next) => {
   }
   // 2) verify token to check if no changes happened (expired tokens , no changes happened)
   let decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-  console.log(decoded);
-
   // 3) check if this user aready existing
   const currentUser = await userModel.findById(decoded.userId);
   if (!currentUser) {
@@ -181,6 +179,7 @@ const Portect = asyncHandler(async (req, res, next) => {
   }
 
   req.user = currentUser;
+  // req.id = currentUser._id;
   next();
 });
 
