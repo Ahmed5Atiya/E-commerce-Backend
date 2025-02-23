@@ -98,6 +98,15 @@ const deleteUser = asyncHandler(async (req, res, next) => {
   }
   res.status(200).json({ msg: "this user has been deleted" });
 });
+
+const getLoggedInUser = asyncHandler(async (req, res, next) => {
+  const user = await userModel.findOne({ email: req.user.email });
+  if (!user) {
+    const error = ApiError.create("this user  not found", 404, "Fail");
+    return next(error);
+  }
+  res.status(200).json({ user: user });
+});
 module.exports = {
   getUsers,
   createUser,
@@ -107,4 +116,5 @@ module.exports = {
   uploadHandler,
   processImage,
   updateUserPassword,
+  getLoggedInUser,
 };

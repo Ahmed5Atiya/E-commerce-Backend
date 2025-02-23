@@ -8,6 +8,7 @@ const {
   uploadHandler,
   processImage,
   updateUserPassword,
+  getLoggedInUser,
 } = require("../controller/userController");
 const {
   createUserValidation,
@@ -21,6 +22,7 @@ const { Portect, allowedTo } = require("../controller/aurhController");
 const router = express.Router();
 
 router.get("/", getUsers);
+router.get("/getMe", Portect, getLoggedInUser);
 router.post(
   "/",
   Portect,
