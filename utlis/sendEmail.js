@@ -7,8 +7,8 @@ const sendTheEmail = async (options) => {
     port: 465,
     secure: true, // true for port 465, false for other ports
     auth: {
-      user: "mohamedaboelyazid123@gmail.com",
-      pass: "szxqdjshhnvtqzaj",
+      user: process.env.SEND_EMAIL,
+      pass: process.env.PASSWORD,
     },
   });
   // 2) define the email options likke from , to , subject , email content
