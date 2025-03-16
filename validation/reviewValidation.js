@@ -74,7 +74,7 @@ exports.deleteReviewValidation = [
               new Error("The id is not available for this review")
             );
           }
-          if (review.user.toString() !== req.user._id.toString()) {
+          if (review.user._id.toString() !== req.user._id.toString()) {
             return Promise.reject(
               new Error("you are not allowed to delete the review")
             );

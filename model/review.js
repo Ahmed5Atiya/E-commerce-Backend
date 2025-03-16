@@ -61,5 +61,13 @@ reviwoModel.statics.calcAverageratingAndQuntity = async function (productId) {
 reviwoModel.post("save", async function (req, res) {
   await this.constructor.calcAverageratingAndQuntity(this.product);
 });
+// reviwoModel.post("remove", async function (req, res) {
+//   await this.constructor.calcAverageratingAndQuntity(this.product);
+// });
+reviwoModel.post("findOneAndDelete", async function (doc) {
+  if (doc) {
+    await doc.constructor.calcAverageratingAndQuntity(doc.product);
+  }
+});
 const reviewSchema = mongoose.model("Review", reviwoModel); //
 module.exports = reviewSchema;

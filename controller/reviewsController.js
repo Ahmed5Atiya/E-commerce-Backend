@@ -43,11 +43,11 @@ const getReview = asyncHandler(async (req, res, next) => {
 
 const deleteReview = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
-  const Review = await reviewSchema.findByIdAndDelete({ _id: id });
-  if (!Review) {
+  const document = await reviewSchema.findByIdAndDelete(id);
+  if (!document) {
     return next(ApiError.create(404, "Review not found", "faild"));
   }
-
+  // this is to trager to go to the function save in the database to edit the avg rating and quantity
   res.status(200).json({ msg: "Review delete success" });
 });
 
@@ -65,7 +65,8 @@ const updateReview = asyncHandler(async (req, res, next) => {
   if (!updatedProduct) {
     return next(ApiError.create(404, "This Review is not available", "failed")); // Corrected typo
   }
-
+  // this is to trager to go to the function save in the database to edit the avg rating and quantity
+  updatedProduct.save();
   res.status(200).json({ data: updatedProduct });
 });
 
