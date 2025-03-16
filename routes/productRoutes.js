@@ -15,8 +15,10 @@ const {
   createProductValidation,
 } = require("../validation/product");
 const { Portect, allowedTo } = require("../controller/aurhController");
+const ReviewsRoute = require("./reviewRoute");
 
 const router = express.Router();
+router.use("/:productId/reviews", ReviewsRoute);
 router.get("/", getProducts);
 router.get("/:id", getProductValidation, getProduct);
 router.post(

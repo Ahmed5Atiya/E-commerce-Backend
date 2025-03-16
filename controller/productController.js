@@ -83,7 +83,10 @@ const getProducts = asyncHandler(async (req, res, next) => {
 
 const getProduct = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
-  const product = await Product.findById({ _id: id });
+  let model = Product.findById({ _id: id }).populate({
+    path: "reviews",
+  });
+  let product = await model;
   if (!product) {
     return next(ApiError.create(404, "Product not found", "faild"));
   }

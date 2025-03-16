@@ -72,9 +72,19 @@ const productSchema = new mongoose.Schema(
       default: 0,
     },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    // to enable the virtual population
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  }
 );
-
+// hoe to make the population form the perant to child
+productSchema.virtual("reviews", {
+  ref: "Review",
+  localField: "_id",
+  foreignField: "product",
+});
 const ImageUrl = (doc) => {
   if (doc.imageCover) {
     const imageUrl = `${process.env.BASE_URL}/products/${doc.imageCover}`;
