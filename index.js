@@ -16,6 +16,7 @@ const wishListRouter = require("./routes/wishListRoute");
 const AddressRouter = require("./routes/addressesRoute");
 const couponeRouter = require("./routes/couponeRoute");
 const cartRouter = require("./routes/cartRoute");
+const orderRouter = require("./routes/orderRoute");
 var app = express();
 const connectToDb = async () => {
   //   try {
@@ -41,6 +42,7 @@ app.use("/api/v1/wishlist", wishListRouter);
 app.use("/api/v1/addresses", AddressRouter);
 app.use("/api/v1/coupone", couponeRouter);
 app.use("/api/v1/cart", cartRouter);
+app.use("/api/v1/order", orderRouter);
 app.all("*", (req, res, next) => {
   const error = ApiError.create("this route no correct", 404, "error");
   next(error);
