@@ -1,3 +1,5 @@
+const stripe = require("stripe")(`${process.env.STRIPE_SECRET_KEY}`);
+
 const asyncHandler = require("express-async-handler");
 const ApiError = require("../utlis/globalError");
 const cartSchema = require("../model/cart");
@@ -111,10 +113,68 @@ const updateOrderToDeliverd = asyncHandler(async (req, res, next) => {
     data: updatedOrder,
   });
 });
+//@route post /api/v1/orders/checkout_section/:cartId
+//protected allowed user
+const checkoutPayment = asyncHandler(async (req, res, next) => {
+  const shippingPrice = 0;
+  const taxiPrice = 0;
+  // 1 - get the cart order by the cartId
+  const cart = await cartSchema.findById(req.params.cartId);
+  if (!cart) {
+    return next(ApiError.create("this cart is not available", 404, "failed"));
+  }
+
+  // 2- get order price depends on cart Price and check if (coupone is available)
+  const orderPrice = cart.totalPriceAfterDiscound
+    ? cart.totalPriceAfterDiscound
+    : cart.totalPrice;
+  const totalOrderPrice = orderPrice + taxiPrice + shippingPrice;
+
+  // 3)- create stripe checkout section
+  // const session = await stripe.checkout.sessions.create({
+  //   line_items: [
+  //     {
+  //       name: req.user.name,
+  //       // Provide the exact Price ID (for example, pr_1234) of the product you want to sell
+  //       amount: totalOrderPrice * 100,
+  //       currency: "egp",
+  //       quantity: 1,
+  //     },
+  //   ],
+  //   mode: "payment",
+  //   success_url: `${req.protocol}://${req.get("host")}/orders`,
+  //   cancel_url: `${req.protocol}://${req.get("host")}/cart`,
+  //   customer_email: req.user.email,
+  //   client_reference_id: req.params.cartId,
+  //   metadata: req.body.shippingAddress,
+  // });
+  const session = await stripe.checkout.sessions.create({
+    line_items: [
+      {
+        price_data: {
+          currency: "egp",
+          unit_amount: totalOrderPrice * 100, // Remember, Stripe uses the smallest currency unit (cents in USD, piasters in EGP)
+          product_data: {
+            name: req.user.name, // You can add more product details here if you like
+          },
+        },
+        quantity: 1,
+      },
+    ],
+    mode: "payment",
+    success_url: `${req.protocol}://${req.get("host")}/order`,
+    cancel_url: `${req.protocol}://${req.get("host")}/cart`,
+    customer_email: req.user.email,
+    client_reference_id: req.params.cartId,
+    metadata: req.body.shippingAddress,
+  });
+  res.status(201).json({ success: "success", session: session });
+});
 module.exports = {
   createCashOrder,
   getAllOrders,
   getOrder,
   updateOrderToPaid,
   updateOrderToDeliverd,
+  checkoutPayment,
 };
