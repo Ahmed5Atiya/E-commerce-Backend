@@ -3,6 +3,7 @@ const express = require("express");
 const dotenv = require("dotenv");
 var morgan = require("morgan");
 var cors = require("cors");
+const compression = require("compression");
 dotenv.config({ path: ".env" });
 const CategoryRouter = require("./routes/categoryRoutes");
 const subCategoryRouter = require("./routes/subCategoryRoutes");
@@ -29,6 +30,7 @@ const connectToDb = async () => {
 };
 connectToDb();
 app.use(cors());
+app.use(compression());
 app.use(express.json());
 // Serve static files from the "uploads" directory and its subdirectories
 app.use(express.static(path.join(__dirname, "uploads")));

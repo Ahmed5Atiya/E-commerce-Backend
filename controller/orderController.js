@@ -57,7 +57,7 @@ const getAllOrders = asyncHandler(async (req, res) => {
   const skip = (page - 1) * limit;
   let filterObject = {};
   if (req.user.role === "user") {
-    filterObject = { user: req.user._id }; // Use 'category', not 'categoryId'
+    filterObject = { user: req.user._id };
   }
   const Review = await orderSchema.find(filterObject).skip(skip).limit(limit);
   res.json({ result: Review.length, page, data: Review });

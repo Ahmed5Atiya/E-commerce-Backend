@@ -67,7 +67,7 @@ const getCartForLoggedUser = asyncHandler(async (req, res, next) => {
 const deleteProductFromCart = asyncHandler(async (req, res, next) => {
   const cart = await cartSchema.findOneAndUpdate(
     { user: req.user._id },
-    { $pull: { cartItems: { _id: req.params.itemId } } },
+    { $pull: { cartItems: { _id: req.params.itemId } } }, // if i want to delete the product from array
     { new: true }
   );
   if (!cart) {
