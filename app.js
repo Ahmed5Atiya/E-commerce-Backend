@@ -25,7 +25,7 @@ const orderRouter = require("./routes/orderRoute");
 var app = express();
 
 const connectToDb = async () => {
-  await mongoose.connect(process.env.URL);
+  await mongoose.connect(process.env.URL_DB);
   console.log("Connected to MongoDB!");
 };
 connectToDb();
