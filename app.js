@@ -24,11 +24,44 @@ const orderRouter = require("./routes/orderRoute");
 
 var app = express();
 
-const connectToDb = async () => {
-  await mongoose.connect(process.env.URL_DB);
-  console.log("Connected to MongoDB!");
-};
-connectToDb();
+// Reuse Mongo connection in serverless environments
+let cached = global.__mongoose;
+if (!cached) {
+  cached = global.__mongoose = { conn: null, promise: null };
+}
+
+async function connectToDb() {
+  if (cached.conn) {
+    return cached.conn;
+  }
+  if (!cached.promise) {
+    const mongoUri = process.env.URL_DB;
+    if (!mongoUri) {
+      console.error("Missing env URL_DB");
+      throw new Error("Missing URL_DB env var");
+    }
+    mongoose.set("strictQuery", false);
+    cached.promise = mongoose
+      .connect(mongoUri)
+      .then((mongooseInstance) => {
+        console.log("Connected to MongoDB!");
+        return mongooseInstance;
+      })
+      .catch((err) => {
+        console.error(
+          "MongoDB connection error:",
+          err && err.message ? err.message : err
+        );
+        throw err;
+      });
+  }
+  cached.conn = await cached.promise;
+  return cached.conn;
+}
+
+connectToDb().catch(() => {
+  // Connection errors will be logged above and surfaced to requests
+});
 
 app.use(cors());
 app.use(compression());
@@ -36,6 +69,11 @@ app.use(express.json());
 // Serve static files from the "uploads" directory and its subdirectories
 app.use(express.static(path.join(__dirname, "uploads")));
 app.use(morgan("combined"));
+
+// quick root check
+app.get("/", (req, res) => {
+  res.status(200).send("API is up");
+});
 
 // simple health check endpoint for Netlify/Render
 app.get("/healthz", (req, res) => {
