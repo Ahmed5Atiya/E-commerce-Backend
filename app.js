@@ -80,6 +80,32 @@ app.get("/healthz", (req, res) => {
   res.status(200).send("ok");
 });
 
+// test MongoDB connection
+app.get("/test-db", async (req, res) => {
+  try {
+    const mongoose = require("mongoose");
+    console.log("MongoDB connection state:", mongoose.connection.readyState);
+    console.log("URL_DB env var exists:", !!process.env.URL_DB);
+
+    if (mongoose.connection.readyState !== 1) {
+      await mongoose.connect(process.env.URL_DB);
+    }
+
+    res.json({
+      status: "connected",
+      readyState: mongoose.connection.readyState,
+      envVar: !!process.env.URL_DB,
+    });
+  } catch (error) {
+    console.error("DB test error:", error);
+    res.status(500).json({
+      status: "error",
+      message: error.message,
+      envVar: !!process.env.URL_DB,
+    });
+  }
+});
+
 app.use("/api/v1/category", CategoryRouter);
 app.use("/api/v1/subcategory", subCategoryRouter);
 app.use("/api/v1/brand", brandRoute);

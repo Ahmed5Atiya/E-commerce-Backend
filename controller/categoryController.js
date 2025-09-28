@@ -41,21 +41,40 @@ const processImage = async (req, res, next) => {
 };
 // const upload = multer({ storage: multerStorage, fileFilter: filterFile });
 const uploadHandler = uploadSingleImage("image");
-const getAllCategorys = async (req, res) => {
-  // const query = req.query;
-  // const page = query.page * 1 || 1;
-  // const limit = query.limit * 1 || 5;
-  // const skip = (page - 1) * limit;
-  let numberProfuct = await CategorySchema.countDocuments();
-  const apiFeatures = new ApiFeature(CategorySchema.find(), req.query)
-    .sort()
-    .filter()
-    .pagination(numberProfuct)
-    .Limitfields();
-  let { paginationResult, mongooseQuery } = apiFeatures;
-  const product = await mongooseQuery;
+const getAllCategorys = async (req, res, next) => {
+  try {
+    console.log("Starting getAllCategorys...");
 
-  res.json({ result: product.length, paginationResult, data: product });
+    // Check if MongoDB is connected
+    const mongoose = require("mongoose");
+    if (mongoose.connection.readyState !== 1) {
+      console.log("MongoDB not connected, attempting to connect...");
+      await mongoose.connect(process.env.URL_DB);
+    }
+
+    console.log("MongoDB connection state:", mongoose.connection.readyState);
+
+    let numberProfuct = await CategorySchema.countDocuments();
+    console.log("Count documents result:", numberProfuct);
+
+    const apiFeatures = new ApiFeature(CategorySchema.find(), req.query)
+      .sort()
+      .filter()
+      .pagination(numberProfuct)
+      .Limitfields();
+    let { paginationResult, mongooseQuery } = apiFeatures;
+    const product = await mongooseQuery;
+
+    res.json({ result: product.length, paginationResult, data: product });
+  } catch (error) {
+    console.error("Error in getAllCategorys:", error);
+    const apiError = ApiError.create(
+      `Database error: ${error.message}`,
+      500,
+      "Database Error"
+    );
+    next(apiError);
+  }
 };
 const getASingleCategory = async (req, res) => {
   const { id } = req.params;
