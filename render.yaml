@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: my-app
+    env: node
+    runtime: node
+    plan: free
+    region: frankfurt
+    branch: main
+    buildCommand: npm install
+    startCommand: npm start
+    autoDeploy: true
+    healthCheckPath: /healthz
+    envVars:
+      - key: NODE_VERSION
+        value: 18
+      - key: NODE_ENV
+        value: production
+      # Set your MongoDB connection string in Render dashboard or here (avoid committing secrets)
+      # - key: URL
+      #   sync: false

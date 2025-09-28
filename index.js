@@ -35,6 +35,12 @@ app.use(express.json());
 // Serve static files from the "uploads" directory and its subdirectories
 app.use(express.static(path.join(__dirname, "uploads")));
 app.use(morgan("combined"));
+
+// simple health check endpoint for Render
+app.get("/healthz", (req, res) => {
+  res.status(200).send("ok");
+});
+
 app.use("/api/v1/category", CategoryRouter);
 app.use("/api/v1/subcategory", subCategoryRouter);
 app.use("/api/v1/brand", brandRoute);
